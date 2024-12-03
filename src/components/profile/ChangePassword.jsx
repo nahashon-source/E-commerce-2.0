@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { changePassword } from '../../store/authSlice';
 import { toast } from 'react-toastify';
+import { useState } from 'react';
 
 function ChangePassword() {
   const dispatch = useDispatch();
@@ -12,14 +13,24 @@ function ChangePassword() {
     watch,
     formState: { errors },
   } = useForm();
+  
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const onSubmit = async (data) => {
+    setIsLoading(true);
     try {
       await dispatch(changePassword(data)).unwrap();
       toast.success('Password changed successfully');
       reset();
     } catch (error) {
       toast.error('Failed to change password');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -34,13 +45,22 @@ function ChangePassword() {
           <label className="block text-sm font-medium text-gray-700">
             Current Password
           </label>
-          <input
-            type="password"
-            {...register('currentPassword', {
-              required: 'Current password is required',
-            })}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              {...register('currentPassword', {
+                required: 'Current password is required',
+              })}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className="absolute right-3 top-3 text-gray-500"
+            >
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
+          </div>
           {errors.currentPassword && (
             <p className="mt-1 text-sm text-red-600">
               {errors.currentPassword.message}
@@ -52,17 +72,26 @@ function ChangePassword() {
           <label className="block text-sm font-medium text-gray-700">
             New Password
           </label>
-          <input
-            type="password"
-            {...register('newPassword', {
-              required: 'New password is required',
-              minLength: {
-                value: 6,
-                message: 'Password must be at least 6 characters',
-              },
-            })}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              {...register('newPassword', {
+                required: 'New password is required',
+                minLength: {
+                  value: 6,
+                  message: 'Password should be at least 6 characters',
+                },
+              })}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className="absolute right-3 top-3 text-gray-500"
+            >
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
+          </div>
           {errors.newPassword && (
             <p className="mt-1 text-sm text-red-600">
               {errors.newPassword.message}
@@ -74,15 +103,24 @@ function ChangePassword() {
           <label className="block text-sm font-medium text-gray-700">
             Confirm New Password
           </label>
-          <input
-            type="password"
-            {...register('confirmPassword', {
-              required: 'Please confirm your password',
-              validate: (value) =>
-                value === watch('newPassword') || 'Passwords do not match',
-            })}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              {...register('confirmPassword', {
+                required: 'Please confirm your password',
+                validate: (value) =>
+                  value === watch('newPassword') || 'Passwords do not match',
+              })}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className="absolute right-3 top-3 text-gray-500"
+            >
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
+          </div>
           {errors.confirmPassword && (
             <p className="mt-1 text-sm text-red-600">
               {errors.confirmPassword.message}
@@ -92,9 +130,10 @@ function ChangePassword() {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
+          className={`w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          disabled={isLoading}
         >
-          Change Password
+          {isLoading ? 'Changing Password...' : 'Change Password'}
         </button>
       </form>
     </div>
