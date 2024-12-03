@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import ProductCard from '../components/products/ProductCard';
 import SearchBar from '../components/search/SearchBar';
@@ -6,12 +6,33 @@ import HeroSection from '../components/home/HeroSection';
 import { getProducts, searchProducts } from '../services/productService';
 
 function Home() {
-  const [products, setProducts] = useState(getProducts());
+  const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [loading, setLoading] = useState(true);
 
-  const handleSearch = (query) => {
-    const results = query ? searchProducts(query) : getProducts();
-    setProducts(results);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const fetchedProducts = await getProducts();
+        setProducts(fetchedProducts);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const handleSearch = async (query) => {
+    setLoading(true);
+    try {
+      const results = query ? await searchProducts(query) : await getProducts();
+      setProducts(results);
+    } catch (error) {
+      console.error('Error searching products:', error);
+    }
+    setLoading(false);
   };
 
   const categories = [
@@ -23,12 +44,11 @@ function Home() {
 
   const filterByCategory = (categoryId) => {
     setSelectedCategory(categoryId);
-    const allProducts = getProducts();
-    if (categoryId === 'all') {
-      setProducts(allProducts);
-    } else {
-      setProducts(allProducts.filter(product => product.category === categoryId));
-    }
+    setLoading(true);
+    const allProducts = getProducts(); // Or filter from a stored array
+    const filteredProducts = categoryId === 'all' ? allProducts : allProducts.filter(product => product.category === categoryId);
+    setProducts(filteredProducts);
+    setLoading(false);
   };
 
   return (
@@ -36,7 +56,7 @@ function Home() {
       <HeroSection />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <SearchBar onSearch={handleSearch} />
-        
+
         <div className="mb-8">
           <div className="flex space-x-4 overflow-x-auto pb-4">
             {categories.map((category) => (
@@ -55,7 +75,11 @@ function Home() {
           </div>
         </div>
 
-        {products.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-12">
+            <p className="text-gray-600 text-lg">Loading...</p>
+          </div>
+        ) : products.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-600 text-lg">No products found</p>
           </div>
