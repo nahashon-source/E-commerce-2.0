@@ -4,9 +4,17 @@ import { motion } from 'framer-motion';
 import { FiShoppingCart, FiEye } from 'react-icons/fi';
 import ReactStars from 'react-rating-stars-component';
 import { addToCart } from '../../store/cartSlice';
+import { useState } from 'react';
 
 function ProductCard({ product }) {
   const dispatch = useDispatch();
+  const [addedToCart, setAddedToCart] = useState(false);
+
+  const handleAddToCart = (product) => {
+    dispatch(addToCart(product));
+    setAddedToCart(true);
+    setTimeout(() => setAddedToCart(false), 2000); // Reset after 2 seconds
+  };
 
   return (
     <motion.div
@@ -17,8 +25,8 @@ function ProductCard({ product }) {
         <Link to={`/product/${product.id}`}>
           <img
             src={product.image}
-            alt={product.name}
-            className="w-full h-48 object-cover"
+            alt={`Image of ${product.name}`}
+            className="w-full h-48 object-cover sm:h-56 md:h-64 lg:h-72"
           />
         </Link>
         {product.discount > 0 && (
@@ -66,7 +74,7 @@ function ProductCard({ product }) {
         <div className="flex space-x-2">
           <button
             className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center"
-            onClick={() => dispatch(addToCart(product))}
+            onClick={() => handleAddToCart(product)}
           >
             <FiShoppingCart className="mr-2" />
             Add to Cart
@@ -78,6 +86,9 @@ function ProductCard({ product }) {
             <FiEye size={20} />
           </Link>
         </div>
+        {addedToCart && (
+          <div className="mt-2 text-sm text-green-600">Added to Cart!</div>
+        )}
       </div>
     </motion.div>
   );
