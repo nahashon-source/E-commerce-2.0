@@ -22,7 +22,7 @@ function HeroSection() {
             Shop the Latest Tech Gear!
           </h1>
           <p className="text-xl mb-8">
-            Discover amazing deals on premium electronics, accessories, and more.
+            Find incredible deals on high-end electronics, accessories, and more.
           </p>
           <Link
             to="/products"
