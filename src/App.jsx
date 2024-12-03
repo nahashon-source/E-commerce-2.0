@@ -17,7 +17,10 @@ function App() {
     <Provider store={store}>
       <Router>
         <div className="min-h-screen bg-gray-100">
-          <Header />
+          {/* Conditionally render Header based on the current route */}
+          {/* Exclude Header on /login and /register routes */}
+          {window.location.pathname !== "/login" && window.location.pathname !== "/register" && <Header />}
+
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
@@ -40,6 +43,7 @@ function App() {
             />
             <Route path="/product/:id" element={<ProductDetails />} />
           </Routes>
+
           <ToastContainer position="bottom-right" />
         </div>
       </Router>
