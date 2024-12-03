@@ -8,12 +8,12 @@ function RegisterForm() {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
   } = useForm();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.auth);
 
+  // Form submission handler
   const onSubmit = async (data) => {
     const result = await dispatch(registerUser(data));
     if (!result.error) {
@@ -23,6 +23,7 @@ function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {/* Full Name Field */}
       <div>
         <label htmlFor="name" className="block text-sm font-medium text-gray-700">
           Full Name
@@ -43,6 +44,7 @@ function RegisterForm() {
         )}
       </div>
 
+      {/* Email Field */}
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-gray-700">
           Email
@@ -63,6 +65,7 @@ function RegisterForm() {
         )}
       </div>
 
+      {/* Password Field */}
       <div>
         <label htmlFor="password" className="block text-sm font-medium text-gray-700">
           Password
@@ -83,8 +86,10 @@ function RegisterForm() {
         )}
       </div>
 
+      {/* Error Message */}
       {error && <p className="text-sm text-red-600">{error}</p>}
 
+      {/* Submit Button */}
       <button
         type="submit"
         disabled={loading}
