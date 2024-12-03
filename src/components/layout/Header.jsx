@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { logout } from '../../store/authSlice';
 
 function Header() {
@@ -16,17 +16,32 @@ function Header() {
             ShopApp
           </Link>
           <div className="flex items-center space-x-4">
-            <Link to="/" className="text-gray-600 hover:text-gray-800">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive ? "text-blue-600" : "text-gray-600 hover:text-gray-800"
+              }
+            >
               Products
-            </Link>
-            <Link to="/cart" className="text-gray-600 hover:text-gray-800">
+            </NavLink>
+            <NavLink
+              to="/cart"
+              className={({ isActive }) =>
+                isActive ? "text-blue-600" : "text-gray-600 hover:text-gray-800"
+              }
+            >
               Cart ({itemCount})
-            </Link>
+            </NavLink>
             {user ? (
               <div className="flex items-center space-x-4">
-                <Link to="/profile" className="text-gray-600 hover:text-gray-800">
+                <NavLink
+                  to="/profile"
+                  className={({ isActive }) =>
+                    isActive ? "text-blue-600" : "text-gray-600 hover:text-gray-800"
+                  }
+                >
                   Profile
-                </Link>
+                </NavLink>
                 <button
                   onClick={() => dispatch(logout())}
                   className="text-gray-600 hover:text-gray-800"
@@ -35,9 +50,14 @@ function Header() {
                 </button>
               </div>
             ) : (
-              <Link to="/login" className="text-gray-600 hover:text-gray-800">
+              <NavLink
+                to="/login"
+                className={({ isActive }) =>
+                  isActive ? "text-blue-600" : "text-gray-600 hover:text-gray-800"
+                }
+              >
                 Login
-              </Link>
+              </NavLink>
             )}
           </div>
         </div>
